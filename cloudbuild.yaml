@@ -1,0 +1,33 @@
+steps:
+  # Build the Docker image for Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/ffmpeg-nvidia/ffmpeg-nvidia-nvenc:latest'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/ffmpeg-nvidia/ffmpeg-nvidia-nvenc:$BUILD_ID'
+      - '-f'
+      - 'Dockerfile'
+      - '.'
+    timeout: '1200s'
+
+  # Push the 'latest' tag to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/ffmpeg-nvidia/ffmpeg-nvidia-nvenc:latest']
+
+  # Push the tag with the build ID to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/ffmpeg-nvidia/ffmpeg-nvidia-nvenc:$BUILD_ID']
+
+# List the images that will be pushed to Artifact Registry
+images:
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/ffmpeg-nvidia/ffmpeg-nvidia-nvenc:latest'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/ffmpeg-nvidia/ffmpeg-nvidia-nvenc:$BUILD_ID'
+
+# Timeout for the entire build
+timeout: '1500s'
+
+# Options for the build environment
+options:
+  machineType: 'E2_HIGHCPU_8'
