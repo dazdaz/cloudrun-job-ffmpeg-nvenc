@@ -1,6 +1,8 @@
-# Dockerfile
+# Build stage
 
-# Build stage (no changes needed here)
+RUN addgroup --system app && adduser --system --ingroup app app
+USER app
+
 FROM nvidia/cuda:12.1.0-devel-ubuntu22.04 AS builder
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
@@ -25,18 +27,33 @@ RUN git clone https://git.ffmpeg.org/ffmpeg.git ffmpeg && \
         --enable-libvorbis --enable-libass --enable-openssl && \
     make -j$(nproc) && make install
 
-# Runtime stage (updated)
+# --- Runtime stage (UPDATED) ---
 FROM nvidia/cuda:12.1.0-runtime-ubuntu22.04
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES compute,video,utility
 
-# Install Python, pip, and required Google Cloud libraries
+# Install system dependencies AND the Google Cloud SDK
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    # Your original dependencies
     python3 \
     python3-pip \
     libx264-163 libx265-199 libvpx7 libfdk-aac2 libmp3lame0 libopus0 \
     libvorbis0a libvorbisenc2 libass9 libssl3 \
-    && rm -rf /var/lib/apt/lists/*
+    # Dependencies needed for adding a new repository
+    apt-transport-https \
+    ca-certificates \
+    gnupg \
+    curl \
+    && \
+    # Add the Google Cloud SDK repository
+    echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee /etc/apt/sources.list.d/google-cloud-sdk.list && \
+    curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg && \
+    # Update sources and install the SDK
+    apt-get update && apt-get install -y google-cloud-sdk && \
+    # Clean up APT cache
+    rm -rf /var/lib/apt/lists/*
+
+# Install required Python libraries
 RUN pip3 install google-cloud-storage google-auth
 
 # Copy compiled ffmpeg/ffprobe tools from the builder stage
