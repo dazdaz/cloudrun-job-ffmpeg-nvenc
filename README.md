@@ -95,7 +95,6 @@ The `Dockerfile` uses a multi-stage build to keep the final image lean:
 
 - **Hardware Decoding (`-c:v h264_cuvid`)**: Offloads the video decoding process to the GPU, freeing up the CPU.
 - **Fast Encoder Preset (`-preset p7`)**: Configures the NVIDIA encoder to prioritize speed over quality, ideal for high-throughput batch processing.
-- **Startup CPU Boost**: Provides maximum CPU resources during the job's initialization phase for faster startup.
 - **GCS Volume Mounting**: Eliminates network latency from manual file transfers by treating GCS buckets as local filesystems.
 
 ----
