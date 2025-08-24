@@ -22,7 +22,6 @@ gcloud beta run jobs create ffmpeg-job \
     --region=$REGION \
     --memory=16Gi \
     --cpu=8 \
-    --startup-cpu-boost \
     --gpu=1 \
     --gpu-type=nvidia-l4 \
     --no-gpu-zonal-redundancy \
