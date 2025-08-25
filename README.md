@@ -3,7 +3,7 @@
 This project provides a complete, optimized solution for running GPU-accelerated video transcoding jobs using
 **FFmpeg** with **NVIDIA NVENC** on **Google Cloud Run Jobs**.
 
-The use case is for low-priority, offline transcoding of a batch of videos upto 8Gib in size to their new format via a Cloud Run batch job.
+The use case is for low-priority offline transcoding of a batch of videos upto 8Gib in size to their new format via a Cloud Run batch job.
 
 The entire workflow is automated with shell scripts, from building the container image with Cloud Build to creating and executing the transcoding job. It leverages **Cloud Storage FUSE** for seamless file access, eliminating the need for manual downloads and uploads.
 
@@ -11,11 +11,9 @@ I originally read one video .mp4 file from a GCS bucket, transcoded the file and
 resulted in ~30 megapixel/s.
 
 After re-archictecting this, we now read the file from a GCS bucket, transcode in memory and write the output file to the target GCS bucket.
-We're now achieving ~300 megapixel/s resulting in 0.59 seconds to transcode our test file.
+We're now achieving ~300 megapixel/s resulting in 0.59 seconds to transcode our test file. Your mileage may vary ...
 
 You may want to modify this code to encode a large batch of files, each time that a Cloud Run job instance is deployed.
-
-Right now, we're just encoding one file, to show you how this works.
 
 
 ---
@@ -114,3 +112,8 @@ The `Dockerfile` uses a multi-stage build to keep the final image lean:
 ### Additional Notes
 
 This is not designed to be a lean container image (4Gib) but to show how this works as a proof of concept.
+
+
+### Disclaimer
+
+Use this software at your own risk, any timings may change.
