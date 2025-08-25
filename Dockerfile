@@ -1,8 +1,4 @@
 # Build stage
-
-RUN addgroup --system app && adduser --system --ingroup app app
-USER app
-
 FROM nvidia/cuda:12.1.0-devel-ubuntu22.04 AS builder
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
@@ -27,7 +23,7 @@ RUN git clone https://git.ffmpeg.org/ffmpeg.git ffmpeg && \
         --enable-libvorbis --enable-libass --enable-openssl && \
     make -j$(nproc) && make install
 
-# --- Runtime stage (UPDATED) ---
+# --- Runtime stage ---
 FROM nvidia/cuda:12.1.0-runtime-ubuntu22.04
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES compute,video,utility
@@ -37,6 +33,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     # Your original dependencies
     python3 \
     python3-pip \
+    bc \
     libx264-163 libx265-199 libvpx7 libfdk-aac2 libmp3lame0 libopus0 \
     libvorbis0a libvorbisenc2 libass9 libssl3 \
     # Dependencies needed for adding a new repository
@@ -63,10 +60,18 @@ COPY --from=builder /usr/local /usr/local
 ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 ENV PATH=/usr/local/bin:$PATH
 
-# Create a workspace and copy the new entrypoint script
+# Create a workspace and temp directory for processing
 WORKDIR /workspace
+RUN mkdir -p /tmp/transcode
+
+# Copy the new entrypoint script
 COPY entrypoint.sh .
 RUN chmod +x entrypoint.sh
+
+# Create non-root user for security
+RUN addgroup --system app && adduser --system --ingroup app app
+RUN chown -R app:app /workspace /tmp/transcode
+USER app
 
 # Set the entrypoint to our new wrapper script
 ENTRYPOINT ["./entrypoint.sh"]
