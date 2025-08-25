@@ -78,7 +78,7 @@ This script creates the Cloud Run Job definition, specifying the GPU type, CPU, 
 Upload a video (e.g., `elephant_video.mp4`) to your input bucket. Then, run the execution script, passing the input filename, output filename, and any additional FFmpeg flags.
 
 ```bash
-./05-execute-job.sh
+./04-execute-cloudrun-job-transcode.sh
 ```
 
 The script will wait for the job to complete and you'll find the transcoded file in your output bucket.
