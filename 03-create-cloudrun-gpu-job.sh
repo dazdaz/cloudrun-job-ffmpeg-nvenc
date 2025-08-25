@@ -3,7 +3,7 @@
 # 03-create-cloudrun-gpu-job.sh
 
 # Set your project ID and region
-export PROJECT_ID="myproject"
+export PROJECT_ID="myplayground"
 export REGION="us-central1"
 IMAGE_PATH="${REGION}-docker.pkg.dev/${PROJECT_ID}/ffmpeg-nvidia/ffmpeg-nvidia-nvenc:latest"
 # You must specify your project's number here
@@ -20,7 +20,7 @@ echo "Deploying image: $IMAGE_PATH"
 gcloud beta run jobs create ffmpeg-job \
     --image=$IMAGE_PATH \
     --region=$REGION \
-    --memory=16Gi \
+    --memory=32Gi \
     --cpu=8 \
     --gpu=1 \
     --gpu-type=nvidia-l4 \
