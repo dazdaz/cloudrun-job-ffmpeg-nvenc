@@ -17,7 +17,7 @@ You may want to modify this code to encode a large batch of files, each time tha
 
 
 ---
-## ## Features ‚ú®
+## ## Features
 
 - **Hardware-Accelerated Transcoding**: Uses NVIDIA L4 GPUs on Cloud Run for both video decoding (`h264_cuvid`) and encoding (`h264_nvenc`).
 - **Serverless & Scalable**: Leverages Cloud Run Jobs to run transcoding tasks without managing servers.
@@ -37,7 +37,7 @@ You may want to modify this code to encode a large batch of files, each time tha
 2.  The `gcloud` command-line tool installed and authenticated.
 3.  Two Google Cloud Storage buckets: one for input videos and one for output videos.
 
-### ### 1. Configure Your Environment üîß
+### ### 1. Configure Your Environment
 
 Before running the scripts, you need to update the placeholder values.
 
@@ -47,7 +47,7 @@ Before running the scripts, you need to update the placeholder values.
     -   `bucket=transcode-postprocessing-bucket`
 -   In `02-iam-roles.sh`, update the bucket names in the `gcloud storage buckets add-iam-policy-binding` commands.
 
-### ### 2. Build the Container Image üì¶
+### ### 2. Build the Container Image
 
 This script builds the custom FFmpeg container using Cloud Build and pushes it to your project's Artifact Registry.
 
@@ -55,7 +55,7 @@ This script builds the custom FFmpeg container using Cloud Build and pushes it t
 ./01-build-container.sh
 ```
 
-### ### 3. Set IAM Permissions üîë
+### ### 3. Set IAM Permissions
 
 This script grants the default Compute Engine service account (used by Cloud Run Jobs) the necessary permissions to read from and write to your GCS buckets.
 
@@ -63,7 +63,7 @@ This script grants the default Compute Engine service account (used by Cloud Run
 ./02-iam-roles.sh
 ```
 
-### ### 4. Create the Cloud Run Job ‚öôÔ∏è
+### ### 4. Create the Cloud Run Job
 
 This script creates the Cloud Run Job definition, specifying the GPU type, CPU, memory, and mounting the GCS buckets as volumes.
 
@@ -71,7 +71,7 @@ This script creates the Cloud Run Job definition, specifying the GPU type, CPU, 
 ./03-create-cloudrun-gpu-job.sh
 ```
 
-### ### 5. Execute a Transcoding Task ‚ñ∂Ô∏è
+### ### 5. Execute a Transcoding Task
 
 Upload a video (e.g., `elephant_video.mp4`) to your input bucket. Then, run the execution script, passing the input filename, output filename, and any additional FFmpeg flags.
 
@@ -82,7 +82,7 @@ Upload a video (e.g., `elephant_video.mp4`) to your input bucket. Then, run the 
 The script will wait for the job to complete and you'll find the transcoded file in your output bucket.
 
 ---
-## ## Scripts Overview üìú
+## ## Scripts Overview
 
 - **`01-build-container.sh`**: Builds the Docker image via Cloud Build.
 - **`02-iam-roles.sh`**: Configures the necessary IAM permissions for the Cloud Run job's service account to access the GCS buckets.
@@ -93,7 +93,7 @@ The script will wait for the job to complete and you'll find the transcoded file
 - **`entrypoint.sh`**: The script that runs inside the container, constructing and executing the final `ffmpeg` command using the mounted volume paths.
 
 ---
-## ## Dockerfile Breakdown üê≥
+## ## Dockerfile Breakdown
 
 The `Dockerfile` uses a multi-stage build to keep the final image lean:
 
@@ -101,7 +101,7 @@ The `Dockerfile` uses a multi-stage build to keep the final image lean:
 2.  **Runtime Stage**: Starts from a smaller `nvidia/cuda:12.1.0-runtime` image, copies the compiled FFmpeg binaries from the builder stage, and sets up the `entrypoint.sh` script.
 
 ---
-## ## Key Optimizations Implemented ‚ö°
+## ## Key Optimizations Implemented
 
 - **Hardware Decoding (`-c:v h264_cuvid`)**: Offloads the video decoding process to the GPU, freeing up the CPU.
 - **Fast Encoder Preset (`-preset p7`)**: Configures the NVIDIA encoder to prioritize speed over quality, ideal for high-throughput batch processing.
