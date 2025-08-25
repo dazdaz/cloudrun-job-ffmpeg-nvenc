@@ -11,7 +11,7 @@ I originally read one video .mp4 file from a GCS bucket, transcoded the file and
 resulted in ~30 megapixel/s.
 
 After re-archictecting this, we now read the file from a GCS bucket, transcode in memory and write the output file to the target GCS bucket.
-We're now achieving ~300 megapixel/s resulting in 0.59 seconds to transcode our test file. Your mileage may vary ...
+We're now achieving ~100-300 megapixel/s resulting in 0.59 seconds to transcode our test file. Your mileage may vary ...
 
 You may want to modify this code to encode a large batch of files, each time that a Cloud Run job instance is deployed.
 
